@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -92,6 +93,21 @@ public class RecipeService {
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
+    public List<Recipe> searchRecipes(Long userId, boolean vegetarian, int servings, List<String> includeIngredients,
+                                      List<String> excludeIngredients, String searchText) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return user.getRecipes().stream()
+                    .filter(recipe -> recipe.isVegetarian() == vegetarian)
+                    .filter(recipe -> recipe.getServings() == servings)
+                    .filter(recipe -> includeIngredients.stream().allMatch(recipe.getIngredients()::contains))
+                    .filter(recipe -> excludeIngredients.stream().noneMatch(recipe.getIngredients()::contains))
+                    .filter(recipe -> recipe.getInstructions().contains(searchText))
+                    .collect(Collectors.toList());
+        } else {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+    }
 
-    // Other methods as needed
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/recipes")
@@ -44,11 +45,25 @@ public class RecipeController {
     public void deleteRecipe(@PathVariable Long userId,@PathVariable Long recipeId) {
         recipeService.removeRecipe(userId, recipeId);
     }
+    @GetMapping("/search")
+    public List<Recipe> searchRecipes(@RequestParam Long userId,
+                                      @RequestParam boolean vegetarian,
+                                      @RequestParam int servings,
+                                      @RequestParam List<String> includeIngredients,
+                                      @RequestParam List<String> excludeIngredients,
+                                      @RequestParam String searchText) {
+        Optional<User> userOptional = userService.getUserByUserId(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return recipeService.searchRecipes(user.getUser_id(), vegetarian, servings, includeIngredients, excludeIngredients, searchText);
+        } else {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+    }
 
     @GetMapping
     public List<Recipe> getAllRecipes() {
         return recipeService.getAllRecipes();
     }
 
-    // Additional endpoints and methods
 }
