@@ -52,13 +52,9 @@ public class RecipeController {
                                       @RequestParam List<String> includeIngredients,
                                       @RequestParam List<String> excludeIngredients,
                                       @RequestParam String searchText) {
-        Optional<User> userOptional = userService.getUserByUserId(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            return recipeService.searchRecipes(user.getUser_id(), vegetarian, servings, includeIngredients, excludeIngredients, searchText);
-        } else {
-            throw new RuntimeException("User not found with id: " + userId);
-        }
+
+            return recipeService.searchRecipes(userId, vegetarian, servings, includeIngredients, excludeIngredients, searchText);
+
     }
 
     @GetMapping

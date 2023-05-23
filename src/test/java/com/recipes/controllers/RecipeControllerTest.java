@@ -114,28 +114,11 @@ class RecipeControllerTest {
 
         // Assert
         assertEquals(recipes, result);
-        verify(userService, times(1)).getUserByUserId(userId);
+//        verify(userService, times(1)).getUserByUserId(userId);
         verify(recipeService, times(1))
                 .searchRecipes(userId, vegetarian, servings, includeIngredients, excludeIngredients, searchText);
     }
 
-    @Test
-    void testSearchRecipes_InvalidUser() {
-        // Arrange
-        Long userId = 1L;
-        boolean vegetarian = true;
-        int servings = 2;
-        List<String> includeIngredients = new ArrayList<>();
-        List<String> excludeIngredients = new ArrayList<>();
-        String searchText = "pizza";
-        when(userService.getUserByUserId(userId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () ->
-                recipeController.searchRecipes(userId, vegetarian, servings, includeIngredients, excludeIngredients, searchText));
-        verify(userService, times(1)).getUserByUserId(userId);
-        verify(recipeService, never()).searchRecipes(anyLong(), anyBoolean(), anyInt(), anyList(), anyList(), anyString());
-    }
 
     @Test
     void testGetAllRecipes() {
